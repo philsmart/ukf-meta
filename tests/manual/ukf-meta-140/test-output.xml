@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" xmlns:wayf="http://sdss.ac.uk/2006/06/WAYF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" entityID="https://idp.example.org/test">
+
+    <Extensions>
+        <ukfedlabel:AccountableUsers/>
+        <mdattr:EntityAttributes>
+            <saml:Attribute Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue>https://refeds.org/sirtfi</saml:AttributeValue>
+            </saml:Attribute>
+            
+        </mdattr:EntityAttributes>
+    </Extensions>
+</EntityDescriptor>

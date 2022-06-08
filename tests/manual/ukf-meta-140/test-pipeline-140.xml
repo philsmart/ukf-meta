@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Verb to generate all UK aggregates.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    default-lazy-init="true"
+    xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+        Import commonly used beans.
+    -->
+    <import resource="classpath:common-beans.xml"/>
+
+    <!--
+        *****************************
+        ***                       ***
+        ***   U T I L I T I E S   ***
+        ***                       ***
+        *****************************
+    -->
+
+    <!-- This bean MUST be called "conversionService" to work properly. -->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="net.shibboleth.ext.spring.config.DurationToLongConverter" />
+                <bean class="net.shibboleth.ext.spring.config.StringToIPRangeConverter" />
+                <bean class="net.shibboleth.ext.spring.config.BooleanToPredicateConverter" />
+                <bean class="net.shibboleth.ext.spring.config.StringBooleanToPredicateConverter" />
+                <bean class="net.shibboleth.ext.spring.config.StringToResourceConverter" />
+            </set>
+        </property>
+    </bean>
+
+    <bean id="test-pipeline" parent="mda.SimplePipeline">
+        <property name="stages">
+            <list>
+               <ref bean="source"/>
+               <ref bean="strip.AccountableUsers"/>
+               <ref bean="serialize"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="source" class="net.shibboleth.metadata.dom.DOMFilesystemSourceStage">
+        <property name="id" value="source"/>
+        <property name="parserPool">
+            <bean class="net.shibboleth.utilities.java.support.xml.BasicParserPool" init-method="initialize"/>
+        </property>
+        <property name="source">
+            <bean class="java.io.File">
+                <constructor-arg value="/Users/philipsmart/Documents/Java/ukf-workspace/phil-ukf-meta/tests/manual/ukf-meta-140/test-entity.xml"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="strip.AccountableUsers" parent="mda.CompositeStage">
+        <property name="composedStages">
+            <list>              
+                <!-- remove the SIRTFI entity attribute -->
+                <bean id="entityAttributes" parent="mda.EntityAttributeFilteringStage"
+                    p:whitelisting="false">
+                    <property name="rules">
+                        <list>
+                            <ref bean="AccountableUsers.entity.attribute.matcher"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="AccountableUsers.entity.attribute.matcher" 
+        class="uk.org.ukfederation.mda.dom.saml.mdattr.AssuranceCertificationMatcher"
+        c:_="https://ukfederation.org.uk/category/accountable-users"/>
+        
+     <bean id="serialize" class="net.shibboleth.metadata.pipeline.SerializationStage">
+        <property name="id" value="serializeIdPs"/>
+        <property name="outputFile">
+            <bean class="java.io.File">
+                <constructor-arg value="/Users/philipsmart/Documents/Java/ukf-workspace/phil-ukf-meta/tests/manual/ukf-meta-140/test-output.xml"/>
+            </bean>
+        </property>
+        <property name="serializer">
+            <bean id="domSerializer" class="net.shibboleth.metadata.dom.DOMElementSerializer" />
+        </property>
+    </bean>
+
+   
+
+</beans>
